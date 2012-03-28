@@ -56,6 +56,7 @@ public:
         {}
 
         void toTop(StretchableStack<T> &s);
+        void check(StretchableStack<T> &s);
         bool hasNext();
 
         T &next()
@@ -117,6 +118,14 @@ void StretchableStack<T>::Iterator::toTop(StretchableStack<T> &s)
 {
     block = s.mHigh;
     nextPos = block->length;
+}
+
+template <class T>
+void StretchableStack<T>::Iterator::check(StretchableStack<T> &s)
+{
+    if (block == s.mHigh->next || (
+                block == s.mHigh && nextPos > block->length))
+        toTop(s);
 }
 
 template <class T>

@@ -6,10 +6,10 @@ double AriphmeticStack::pop()
     double res = s.pop().value;
 
     currProduct = s.isEmpty() ? 1 : s.top().precalcProduct;
-    productBorder.toTop(s);
+    productBorder.check(s);
 
     currSumsin = s.isEmpty() ? 0 : s.top().precalcSumsin;
-    sumsinBorder.toTop(s);
+    sumsinBorder.check(s);
 
     return res;
 }
