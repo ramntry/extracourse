@@ -20,7 +20,7 @@ public:
 
     double pop();
 
-    double const& top()
+    double const& top() const
     { return s.top().value; }
 
     bool isEmpty() const
@@ -35,8 +35,8 @@ public:
     void truncate()
     { s.truncate(); }
 
-    double product();
-    double sumsin();
+    double product() const;
+    double sumsin() const;
 
 private:
     struct AriphmeticItem
@@ -58,11 +58,11 @@ private:
 
     Impl s;
 
-    Impl::Iterator productBorder;
-    double currProduct;
+    mutable Impl::Iterator productBorder;
+    mutable double currProduct;
 
-    Impl::Iterator sumsinBorder;
-    double currSumsin;
+    mutable Impl::Iterator sumsinBorder;
+    mutable double currSumsin;
 
 friend
     std::ostream &operator <<(std::ostream &os, AriphmeticStack &stack);

@@ -3,8 +3,6 @@
 #include <iostream>
 #include "Stack.h"
 
-bool const release = false;  // true -> supressing debug messages
-
 template <class T>
 class StretchableStack : public DynamicStack<T>
 {
@@ -14,7 +12,7 @@ public:
 
     void push(T value);
     T pop();
-    T const& top();
+    T const& top() const;
 
     bool isEmpty() const;
 
@@ -50,22 +48,22 @@ public:
     class Iterator
     {
     public:
-        Iterator(StretchableStack<T> &s)
+        Iterator(StretchableStack<T> const& s)
             : block(s.mHead)
             , nextPos(0)
         {}
 
-        void toTop(StretchableStack<T> &s);
-        void check(StretchableStack<T> &s);
+        void toTop(StretchableStack<T> const& s);
+        void check(StretchableStack<T> const& s);
         bool hasNext();
 
         T &next()
         { return block->array[nextPos++]; }
 
-        T &getNext()
+        T &getNext() const
         { return block->array[nextPos]; }
 
-        bool operator !=(Iterator const& right)
+        bool operator !=(Iterator const& right) const
         { return nextPos != right.nextPos || block != right.block; }
 
     private:
@@ -114,14 +112,14 @@ void StretchableStack<T>::truncate()
 }
 
 template <class T>
-void StretchableStack<T>::Iterator::toTop(StretchableStack<T> &s)
+void StretchableStack<T>::Iterator::toTop(StretchableStack<T> const& s)
 {
     block = s.mHigh;
     nextPos = block->length;
 }
 
 template <class T>
-void StretchableStack<T>::Iterator::check(StretchableStack<T> &s)
+void StretchableStack<T>::Iterator::check(StretchableStack<T> const& s)
 {
     if (block == s.mHigh->next || (
                 block == s.mHigh && nextPos > block->length))
@@ -148,11 +146,7 @@ void StretchableStack<T>::push(T value)
     if (mHigh->length == mHigh->capacity)
     {
         if (mHigh->next == NULL)
-        {
             mHigh->next = new StackBlock(mHigh->capacity * capacityMultiplier, mHigh);
-            release || std::cout << "alloc new block in StretchableStack" << std::endl;
-        } else
-            release || std::cout << "reuse block in StretchableStack" << std::endl;
 
         mHigh = mHigh->next;
     }
@@ -172,7 +166,7 @@ T StretchableStack<T>::pop()
 }
 
 template <class T>
-T const& StretchableStack<T>::top()
+T const& StretchableStack<T>::top() const
 {
     StackBlock *high = mHigh;
     if (high->length == 0)

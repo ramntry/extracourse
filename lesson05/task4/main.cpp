@@ -5,6 +5,15 @@ using namespace std;
 
 double const sqrtPi = sqrt(acos(-1));
 
+void printFuncs(AriphmeticStack const& stack)
+{
+    cout << "Product: " << stack.product() << '\n'
+         << "Sumsin: "  << stack.sumsin()  << endl;
+
+    stack.top();  // OK
+//    stack.pop();  // compilation error
+}
+
 int main()
 {
     AriphmeticStack stack;
@@ -81,6 +90,8 @@ int main()
     stack3.push(sqrtPi);
     cout << stack3.sumsin() << endl;
     cout << stack3.sumsin() << endl;
+
+    printFuncs(stack3);
 
     stack3.pop();
     stack3.pop();

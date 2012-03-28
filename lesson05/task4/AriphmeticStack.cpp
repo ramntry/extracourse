@@ -14,28 +14,24 @@ double AriphmeticStack::pop()
     return res;
 }
 
-double AriphmeticStack::product()
+double AriphmeticStack::product() const
 {
     while (productBorder.hasNext())
     {
         currProduct *= productBorder.getNext().value;
-        release || std::cout << "multiply in product()" << std::endl;
         productBorder.next().precalcProduct = currProduct;
     }
     return currProduct;
 }
 
-double AriphmeticStack::sumsin()
+double AriphmeticStack::sumsin() const
 {
     while (sumsinBorder.hasNext())
     {
         double currValue = sumsinBorder.getNext().value;
         Impl::Iterator it(s);
         while(it.hasNext() && it != sumsinBorder)
-        {
             currSumsin += sin(currValue * it.next().value);
-            release || std::cout << "sin() in sumsin()" << std::endl;
-        }
 
         sumsinBorder.next().precalcSumsin = currSumsin;
     }
