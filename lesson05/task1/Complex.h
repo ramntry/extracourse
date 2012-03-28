@@ -24,10 +24,11 @@ private:
     double re;
     double im;
 
-friend Complex operator +(Complex left, Complex const& right);
-friend Complex operator -(Complex left, Complex const& right);
-friend Complex operator *(Complex left, Complex const& right);
-friend Complex operator /(Complex left, Complex const& right);
 
 friend std::ostream &operator <<(std::ostream &os, Complex const& z);
 };
+
+Complex operator +(Complex left, Complex const& right);
+Complex operator -(Complex left, Complex const& right);
+Complex operator *(Complex left, Complex const& right);
+Complex operator /(Complex left, Complex const& right);
