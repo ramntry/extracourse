@@ -4,4 +4,5 @@ HEADERS += \
     AriphmeticStack.h
 
 SOURCES += \
-    main.cpp
+    main.cpp \
+    AriphmeticStack.cpp
