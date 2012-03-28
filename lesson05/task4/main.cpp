@@ -1,4 +1,5 @@
 #include <iostream>
+#include <deque>
 #include "AriphmeticStack.h"
 
 using namespace std;
