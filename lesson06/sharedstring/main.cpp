@@ -1,7 +1,4 @@
 #include <iostream>
-#include <iterator>
-#include <vector>
-#include <algorithm>
 #include "SharedString.h"
 
 
