@@ -1,7 +1,30 @@
 #include <iostream>
+#include <iterator>
+#include <vector>
+#include <algorithm>
 #include "SharedString.h"
 
+
 using namespace std;
+
+void cpy(SharedString *dst, SharedString const* src, int n)
+{
+    for (int i = 0; i < n; ++i)
+        dst[i] = src[i];
+}
+
+void print(SharedString const* a, int n)
+{
+    for (int i = 0; i < n; ++i)
+    {
+        for (size_t j = 0; j < a[i].size(); ++j)
+            cout.put(a[i][j]);  // There are no deep copy
+        cout.put(' ');
+    }
+    cout.put('\n');
+
+//    a[0][0] = '!';  // compilation error (that's OK)
+}
 
 int main()
 {
@@ -43,6 +66,11 @@ int main()
     sh4 += sh5;
 
     cout << sh4.substr(17, 32) << endl;
+
+    SharedString nums[] = { "one", "two", "three", "four", "five" };
+    SharedString dst[5]; // There are no heap alloc
+    cpy(dst, nums, 5);   // There are no real copy
+    print(dst, 5);
 
     return 0;
 

@@ -1,19 +1,37 @@
 #include "SharedString.h"
 
+// Reference count in this shared string will not
+// change - this is a reentrant shared empty string
+char SharedString::sharedEmpty[] = { 127 };
+
+SharedString::SharedString()
+    : len(0)
+    , ref(sharedEmpty)
+{}
+
+// len should be initialized
+void SharedString::init(const char *src)
+{
+    if (len)
+    {
+        ref = new char[len + 1];
+        memcpy(ref + 1, src, len);
+        *ref = 1;
+    }
+    else
+        ref = sharedEmpty;
+}
+
 SharedString::SharedString(const char *cstr)
     : len(strlen(cstr))
-    , ref(new char[len + 1])
 {
-    *ref = 1;
-    memcpy(ref + 1, cstr, len);
+    init(cstr);
 }
 
 SharedString::SharedString(const char *src, size_t size)
     : len(size)
-    , ref(new char[len + 1])
 {
-    *ref = 1;
-    memcpy(ref + 1, src, len);
+    init(src);
 }
 
 SharedString::SharedString(char *_ref, size_t size)
@@ -35,7 +53,7 @@ SharedString &SharedString::operator =(SharedString const& src)
 {
     char *tmp = ref;
 
-    --*ref;
+    safeDecRef();
     ref = src.ref;
     len = src.len;
 
@@ -49,7 +67,9 @@ SharedString &SharedString::operator =(SharedString const& src)
 
 SharedString::~SharedString()
 {
-    if (--*ref == 0)
+    safeDecRef();
+
+    if (*ref == 0)
         delete[] ref;
 }
 
@@ -74,6 +94,12 @@ void SharedString::safeIncRef()
         ++*ref;
 }
 
+void SharedString::safeDecRef()
+{
+    if (ref != sharedEmpty)
+        --*ref;
+}
+
 char const& SharedString::operator [](size_t pos) const
 {
     return ref[pos + 1];
@@ -83,7 +109,7 @@ char &SharedString::operator [](size_t pos)
 {
     if (*ref > 1) // change to *ref != 1 if you want to set
     {             // ... maxRefCounter at 255
-        --*ref;
+        safeDecRef();
         unshare();
     }
 
@@ -108,7 +134,7 @@ SharedString &SharedString::operator +=(SharedString const& right)
     return *this = *this + right;
 }
 
-SharedString SharedString::substr(size_t pos, size_t size)
+SharedString SharedString::substr(size_t pos, size_t size) const
 {
     return SharedString((const char *)ref + pos + 1, size);
 }
