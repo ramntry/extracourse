@@ -108,6 +108,11 @@ SharedString &SharedString::operator +=(SharedString const& right)
     return *this = *this + right;
 }
 
+SharedString SharedString::substr(size_t pos, size_t size)
+{
+    return SharedString((const char *)ref + pos + 1, size);
+}
+
 std::ostream &operator <<(std::ostream &os, SharedString const& str)
 {
     return os.write(str.ref + 1, str.len);

@@ -15,6 +15,7 @@ public:
     char const& operator [](size_t pos) const;
 
     SharedString &operator +=(SharedString const& right);
+    SharedString substr(size_t pos, size_t size);
 
 private:
     SharedString(char *_ref, size_t size);
