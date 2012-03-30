@@ -90,10 +90,16 @@ int main()
     string stdStr(small.local_cstr());  // fast and safe solution
     cout << stdStr;
 
-    SharedString empty;
+    SharedString empty = "";
     char *tmp = empty.dynamic_cstr();
     cout << tmp << endl;
     delete[] tmp;
+
+    string sh4cp = sh4;
+    cout << sh4cp << endl;
+
+    SharedString *heap = new SharedString(sh4cp);
+    delete heap;
 
     return 0;
 

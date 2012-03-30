@@ -1,5 +1,6 @@
 #pragma once
 #include <cstring>
+#include <string>
 #include <iostream>
 
 class SharedString
@@ -8,6 +9,7 @@ public:
     SharedString();
     SharedString(const char *cstr);
     SharedString(const char *src, size_t size);
+    SharedString(std::string const& src);
     SharedString(SharedString const& src);
     SharedString &operator =(SharedString const& src);
     ~SharedString();
@@ -27,6 +29,8 @@ public:
     // Responsible for freeing the memory allocated for the returned
     // object lying on the calling code
     char *dynamic_cstr() const;
+
+    operator std::string() const;
 
 private:
     void init(const char *src);

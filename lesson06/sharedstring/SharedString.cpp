@@ -35,6 +35,12 @@ SharedString::SharedString(const char *src, size_t size)
     init(src);
 }
 
+SharedString::SharedString(std::string const& src)
+    : len(src.size())
+{
+    init(src.c_str());
+}
+
 SharedString::SharedString(char *_ref, size_t size)
     : len(size)
     , ref(_ref)
@@ -151,6 +157,11 @@ char *SharedString::dynamic_cstr() const
     memcpy(tmp, ref + 1, len + 1);
 
     return tmp;
+}
+
+SharedString::operator std::string() const
+{
+    return std::string(local_cstr());
 }
 
 std::ostream &operator <<(std::ostream &os, SharedString const& str)
