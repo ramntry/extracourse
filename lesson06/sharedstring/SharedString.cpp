@@ -2,7 +2,7 @@
 
 // Reference count in this shared string will not
 // change - this is a reentrant shared empty string
-char SharedString::sharedEmpty[] = { 127 };
+char SharedString::sharedEmpty[] = "\1";
 
 SharedString::SharedString()
     : len(0)
@@ -14,8 +14,9 @@ void SharedString::init(const char *src)
 {
     if (len)
     {
-        ref = new char[len + 1];
+        ref = new char[len + 2];
         memcpy(ref + 1, src, len);
+        ref[len + 1] = '\0';
         *ref = 1;
     }
     else
@@ -77,8 +78,8 @@ SharedString::~SharedString()
 // the source-string lies in the calling code
 void SharedString::unshare()
 {
-    char *tmp = new char[len + 1];
-    memcpy(tmp + 1, ref + 1, len);
+    char *tmp = new char[len + 2];
+    memcpy(tmp + 1, ref + 1, len + 1);
 
     *tmp = 1;
     ref = tmp;
@@ -119,10 +120,10 @@ char &SharedString::operator [](size_t pos)
 SharedString operator +(SharedString const& left, SharedString const& right)
 {
     size_t catLen = left.len + right.len;
-    char *dst = new char[catLen + 1];
+    char *dst = new char[catLen + 2];
 
     memcpy(dst + 1, left.ref + 1, left.len);
-    memcpy(dst + left.len + 1, right.ref + 1, right.len);
+    memcpy(dst + left.len + 1, right.ref + 1, right.len + 1);
 
 /* DEBUG */ std::cout << "[ DEBUG: memcpy() in operator +(...) ]" << std::endl;
 
@@ -137,6 +138,19 @@ SharedString &SharedString::operator +=(SharedString const& right)
 SharedString SharedString::substr(size_t pos, size_t size) const
 {
     return SharedString((const char *)ref + pos + 1, size);
+}
+
+const char *SharedString::local_cstr() const
+{
+    return ref + 1;
+}
+
+char *SharedString::dynamic_cstr() const
+{
+    char *tmp = new char[len + 1];
+    memcpy(tmp, ref + 1, len + 1);
+
+    return tmp;
 }
 
 std::ostream &operator <<(std::ostream &os, SharedString const& str)

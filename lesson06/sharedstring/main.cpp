@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "SharedString.h"
 
 
@@ -51,7 +52,7 @@ int main()
     str2[6] = '_';
     cout << str << " | " << str2 << endl;
 
-    SharedString sh0 = "something strange";
+    SharedString sh0 = "something strange ";
     SharedString sh1 = "to be";
     SharedString sh12 = sh1;
     SharedString sh2 = " or not ";
@@ -59,10 +60,18 @@ int main()
     SharedString sh4 = sh3;
     sh4 += " (Shakes";
 
-    SharedString sh5("peare)rubbish rubbish again", 13);
+    SharedString sh5("peare) rubbish rubbish again", 14);
     sh4 += sh5;
 
-    cout << sh4.substr(17, 32) << endl;
+//    sh4.local_cstr()[0] = 'S';  // compilation error. That's OK
+    cout << sh4.local_cstr() << endl;
+
+    char *deepCopy = sh4.dynamic_cstr();
+    deepCopy[0] = 'S';
+    cout << deepCopy << endl;
+    delete[] deepCopy;
+
+    cout << sh4.substr(18, 33) << endl;
 
     SharedString nums[] = { "one", "two", "three", "four", "five" };
     SharedString dst[5]; // There are no heap alloc
@@ -77,6 +86,14 @@ int main()
                    // даже при толковой его реализации operator + все одно
                    // нужно оставлять независимым - через += его также эффективно
                    // реализовать не представляется возможным.
+
+    string stdStr(small.local_cstr());  // fast and safe solution
+    cout << stdStr;
+
+    SharedString empty;
+    char *tmp = empty.dynamic_cstr();
+    cout << tmp << endl;
+    delete[] tmp;
 
     return 0;
 

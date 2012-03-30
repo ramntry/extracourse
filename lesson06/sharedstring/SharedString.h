@@ -21,6 +21,13 @@ public:
     size_t size() const
     { return len; }
 
+    // The returned pointer becomes a dangling when you delete the object
+    const char *local_cstr() const;
+
+    // Responsible for freeing the memory allocated for the returned
+    // object lying on the calling code
+    char *dynamic_cstr() const;
+
 private:
     void init(const char *src);
     SharedString(char *_ref, size_t size);
@@ -33,7 +40,7 @@ private:
     char *ref;
 
     static const char maxRefCounter = 3; // Debug value; Release value 127
-    static char sharedEmpty[1];
+    static char sharedEmpty[2];
 
 friend SharedString operator +(SharedString const& left, SharedString const& right);
 
