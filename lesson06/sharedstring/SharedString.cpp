@@ -2,32 +2,26 @@
 
 // Reference count in this shared data will not
 // change - this is a reentrant shared empty string
-SharedString::SharedData SharedString::sharedEmpty = '\0';
-
 SharedString::SharedData::SharedData(char nullForSharedEmpty)
     : len(0)
     , ref(1)
-{ s[len] = nullForSharedEmpty; }
+{
+    s[len] = nullForSharedEmpty;
+}
+SharedString::SharedData SharedString::sharedEmpty = '\0';
 
 SharedString::SharedData::SharedData(size_t strLength)
     : len(strLength)
     , ref(1)
-{ s[len] = '\0'; }
+{
+    s[len] = '\0';
+}
 
 void *SharedString::SharedData::operator new(size_t headerSize, size_t strLength)
 {
     void *place = ::operator new(headerSize + strLength);
     return ::new(place) SharedData(strLength);
 }
-
-void SharedString::SharedData::operator delete(void *p)
-{
-    ::operator delete(p);
-}
-
-SharedString::SharedString()
-    : d(&sharedEmpty)
-{}
 
 void SharedString::init(const char *src, size_t length)
 {
@@ -38,36 +32,6 @@ void SharedString::init(const char *src, size_t length)
     }
     else
         d = &sharedEmpty;
-}
-
-SharedString::SharedString(const char *cstr)
-{
-    init(cstr, strlen(cstr));
-}
-
-SharedString::SharedString(const char *src, size_t size)
-{
-    init(src, size);
-}
-
-SharedString::SharedString(std::string const& src)
-{
-    init(src.c_str(), src.size());
-}
-
-/*
-SharedString::SharedString(char *_ref, size_t size)
-    : len(size)
-    , ref(_ref)
-{
-    *ref = 1;
-}
-*/
-
-SharedString::SharedString(const SharedString &src)
-    : d(src.d)
-{
-    d->ref++;
 }
 
 // Think long and hard before changing the code for this method
@@ -93,83 +57,47 @@ SharedString::~SharedString()
         delete d;
 }
 
-// Responsiblity for the decrement the reference count in
-// the source-string lies in the calling code
 void SharedString::unshare()
 {
     SharedData *tmp = new(d->len) SharedData;
     memcpy(tmp->s, d->s, d->len);
+    safeDecRef();
     d = tmp;
-
-/* DEBUG */ std::cout << "[ DEBUG: memcpy() in unshare() ]" << std::endl;
-}
-
-void SharedString::safeDecRef()
-{
-    if (d != &sharedEmpty)
-        d->ref--;
-}
-
-char const& SharedString::operator [](size_t pos) const
-{
-    return d->s[pos];
 }
 
 char &SharedString::operator [](size_t pos)
 {
     if (d->ref > 1)
-    {
-        safeDecRef();
         unshare();
-    }
 
     return d->s[pos];
 }
 
-/*
 SharedString operator +(SharedString const& left, SharedString const& right)
 {
-    size_t catLen = left.len + right.len;
-    char *dst = new char[catLen + 2];
+    size_t catSize = left.size() + right.size();
+    SharedString::SharedData *dst = new(catSize) SharedString::SharedData;
 
-    memcpy(dst + 1, left.ref + 1, left.len);
-    memcpy(dst + left.len + 1, right.ref + 1, right.len + 1);
+    memcpy(dst->s, left.local_cstr(), left.size());
+    memcpy(dst->s + left.size(), right.local_cstr(), right.size());
 
-/* DEBUG *//* std::cout << "[ DEBUG: memcpy() in operator +(...) ]" << std::endl;
-
-    return SharedString(dst, catLen);
+    return SharedString(dst);
 }
 
 SharedString &SharedString::operator +=(SharedString const& right)
 {
     return *this = *this + right;
 }
-*/
 
 SharedString SharedString::substr(size_t pos, size_t size) const
 {
-    return SharedString((const char *)d->s + pos, size);
-}
-
-const char *SharedString::local_cstr() const
-{
-    return d->s;
+    return SharedString(local_cstr() + pos, size);
 }
 
 char *SharedString::dynamic_cstr() const
 {
-    char *tmp = new char[d->len + 1];
-    memcpy(tmp, d->s, d->len + 1);
+    char *tmp = new char[size() + 1];
+    memcpy(tmp, local_cstr(), size() + 1);
 
     return tmp;
-}
-
-SharedString::operator std::string() const
-{
-    return std::string(local_cstr());
-}
-
-std::ostream &operator <<(std::ostream &os, SharedString const& str)
-{
-    return os.write(str.d->s, str.d->len);
 }
