@@ -21,7 +21,7 @@ public:
     SharedString substr(size_t pos, size_t size) const;
 
     size_t size() const
-    { return len; }
+    { return d->len; }
 
     // The returned pointer becomes a dangling when you delete the object
     const char *local_cstr() const;
@@ -37,8 +37,8 @@ private:
     class SharedData
     {
     public:
-        size_t ref;
         size_t len;
+        int ref;
         char s[1];
 
         SharedData() {}
@@ -51,19 +51,17 @@ private:
         SharedData(size_t strLength);
     };
 #pragma pack(pop)
+    static const size_t headerSize = sizeof(SharedData);
 
-    void init(const char *src);
+    void init(const char *src, size_t length);
     SharedString(char *_ref, size_t size);
 
     void unshare();
-    void safeIncRef();
     void safeDecRef();
 
-    size_t len;
-    char *ref;
+    SharedData *d;
 
-    static const char maxRefCounter = 3; // Debug value; Release value 127
-    static char sharedEmpty[2];
+    static SharedData sharedEmpty;
 
 friend SharedString operator +(SharedString const& left, SharedString const& right);
 

@@ -51,7 +51,7 @@ int main()
 
     str2[6] = '_';
     cout << str << " | " << str2 << endl;
-
+/*
     SharedString sh0 = "something strange ";
     SharedString sh1 = "to be";
     SharedString sh12 = sh1;
@@ -62,8 +62,7 @@ int main()
 
     SharedString sh5("peare) rubbish rubbish again", 14);
     sh4 += sh5;
-
-//    sh4.local_cstr()[0] = 'S';  // compilation error. That's OK
+    sh4.local_cstr()[0] = 'S';  // compilation error. That's OK
     cout << sh4.local_cstr() << endl;
 
     char *deepCopy = sh4.dynamic_cstr();
@@ -73,11 +72,12 @@ int main()
 
     cout << sh4.substr(18, 33) << endl;
 
+*/
     SharedString nums[] = { "one", "two", "three", "four", "five" };
     SharedString dst[5]; // There are no heap alloc
     cpy(dst, nums, 5);   // There are no real copy
     print(dst, 5);
-
+/*
     SharedString small = "tr";
     small += "mr"; // в данной реализации += в этой строке выполняется просто
                    // прорва операций. Этот оператор нужно писать независимо,
@@ -100,6 +100,7 @@ int main()
 
     SharedString *heap = new SharedString(sh4cp);
     delete heap;
+*/
 
     return 0;
 
