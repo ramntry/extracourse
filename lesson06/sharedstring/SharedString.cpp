@@ -4,6 +4,27 @@
 // change - this is a reentrant shared empty string
 char SharedString::sharedEmpty[] = "\1";
 
+SharedString::SharedData::SharedData(char nullForSharedEmpty)
+    : ref(1)
+    , len(0)
+{ s[0] = nullForSharedEmpty; }
+
+SharedString::SharedData::SharedData(size_t strLength)
+    : ref(1)
+    , len(strLength)
+{}
+
+void *SharedString::SharedData::operator new(size_t headerSize, size_t strLength)
+{
+    void *place = ::operator new(headerSize + strLength);
+    return ::new(place) SharedData(strLength);
+}
+
+void SharedString::SharedData::operator delete(void *p)
+{
+    ::operator delete(p);
+}
+
 SharedString::SharedString()
     : len(0)
     , ref(sharedEmpty)

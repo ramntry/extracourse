@@ -33,6 +33,25 @@ public:
     operator std::string() const;
 
 private:
+#pragma pack(push, 1)
+    class SharedData
+    {
+    public:
+        size_t ref;
+        size_t len;
+        char s[1];
+
+        SharedData() {}
+        SharedData(char nullForSharedEmpty);
+
+        void *operator new(size_t headerSize, size_t strLength);
+        void operator delete(void *p);
+
+    private:
+        SharedData(size_t strLength);
+    };
+#pragma pack(pop)
+
     void init(const char *src);
     SharedString(char *_ref, size_t size);
 
