@@ -33,6 +33,15 @@ public:
     operator std::string() const;
 
 private:
+    template <int size>
+    struct SharedData
+    {
+        size_t ref;
+        size_t len;
+
+        char data[size];
+    };
+
     void init(const char *src);
     SharedString(char *_ref, size_t size);
 
