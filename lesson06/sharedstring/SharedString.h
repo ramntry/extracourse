@@ -25,7 +25,7 @@ public:
     ~SharedString();
 
     operator std::string() const
-    { return std::string(local_cstr()); }
+    { return std::string(d->s, d->len); }
 
     // The returned pointer becomes a dangling when you delete the object
     const char *local_cstr() const
@@ -58,9 +58,6 @@ private:
         SharedData(char nullForSharedEmpty);
 
         void *operator new(size_t headerSize, size_t strLength);
-
-        void operator delete(void *p)
-        { ::operator delete(p); }
 
     private:
         SharedData(size_t strLength);
